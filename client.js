@@ -6,7 +6,9 @@ socket.on('connect', function() {
     console.log(JSON.stringify(message));
   });
 
-  setInterval(function() {
-    socket.emit('message', {conversation: 1, text: 'heheszky'});
-  }, 500);
+  socket.on('errorMessage', function(message) {
+    console.log(JSON.stringify(message));
+  });
+
+  socket.emit('message', {conversation: 1, text: 'heheszky'});
 });
