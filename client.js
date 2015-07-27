@@ -1,8 +1,12 @@
-var accessToken = 'p56ZB21-UeVsGJru4L_N';
+var accessToken = 'cz5WPumy1PkiDg4Xyxzc';
 var socket = io.connect('http://localhost:8080?accessToken=' + accessToken);
 
-socket.emit('message', {conversation: 1});
+socket.on('connect', function() {
+  socket.on('message', function(message) {
+    console.log(JSON.stringify(message));
+  });
 
-socket.on('message', function(message) {
-  console.log(JSON.stringify(message));
+  setInterval(function() {
+    socket.emit('message', {conversation: 1, text: 'heheszky'});
+  }, 500);
 });
