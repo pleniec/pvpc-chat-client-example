@@ -5,6 +5,7 @@ var rest = require('restler');
 app.use(express.static('public'));
 
 app.post('/login', function(req, res) {
+  console.log(req.query);
   rest
     .post('http://localhost:3000/users/login', {username: 'pvpc',
                                                 password: 'pefalpe987',
@@ -14,7 +15,7 @@ app.post('/login', function(req, res) {
     });
 });
 
-app.get('/conversations', function(req, res) {
+app.get('/conversationParticipants', function(req, res) {
   rest
     .get('http://localhost:3000/conversation_participants', {username: 'pvpc',
                                                              password: 'pefalpe987',
@@ -24,4 +25,4 @@ app.get('/conversations', function(req, res) {
     });
 });
 
-app.listen(8080);
+app.listen(8000);

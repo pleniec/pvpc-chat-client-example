@@ -2,23 +2,34 @@
   <head>
     <title>pvpc-chat-client</title>
   </head>
-  <body>
+  <body ng-app="pvpc.chat.client.example" ng-controller="pvpc.chat.client.example">
     EMAIL
-    <input id="email"/>
+    <input ng-model="email"/>
     PASSWORD
-    <input id="password"/>
-    <button id="login-button">login</button>
+    <input ng-model="password"/>
+    <button ng-click="login()">login</button>
     USER ID
-    <input id="user-id" readonly/>
+    <input ng-model="userId" readonly/>
     ACCESS TOKEN
-    <input id="access-token" readonly/>
+    <input ng-model="accessToken" readonly/>
     <hr/>
-    CONVERSATIONS
-    <button id="load-conversations-button">LOAD</button>
-    <div id="conversations">
+    <button ng-click="loadConversations()">LOAD CONVERSATIONS</button>
+    <hr/>
+    <div ng-repeat="(id, conversation) in conversations">
+      <h3>CONVERSATION: {{ id }}</h3>
+      <ul>
+        <li ng-repeat="message in conversation.messages">
+          {{ message }}
+        </li>
+      </ul>
+      <input ng-model="conversation.newMessage"/>
+      <button ng-click="sendMessage(id, conversation.newMessage)">SEND</button>
+      <hr/>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
     <script src="./socket.io.js"></script>
     <script src="./client.js"></script>
   </body>

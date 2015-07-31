@@ -1,48 +1,55 @@
 (function($) {
+  angular
+    .module('pvpc.chat.client.example', [])
+    .controller('pvpc.chat.client.example', function($scope, $http) {
+      $scope.login = function() {
+        $http
+          .post('/login', null, {params: {email: $scope.email, password: $scope.password}})
+          .success(function(data) {
+            $scope.userId = data.id;
+            $scope.accessToken = data.access_token;
+            $scope.socket = io.connect('http://localhost:8080?accessToken=' + $scope.accessToken);
 
-  $('#login-button').click(function() {
-    $.ajax({
-      url: '/login?' + $.param({email: $('#email').val(), password: $('#password').val()}),
-      method: 'post',
-      error: function() { alert('error'); },
-      success: function(data) {
-        var data = JSON.parse(data);
-        $('#user-id').val(data.id);
-        $('#access-token').val(data.access_token);
-      }
-    });
-  });
+            $scope.socket.on('connect', function() {
+              $scope.socket.on('message', function(message) {
+                $scope.$apply(function() {
+                  $scope.conversations[message.conversation].messages.push(message);
+                });
+              });
 
-  $('#load-conversations-button').click(function() {
-    $.ajax({
-      url: '/conversations?' + $.param({access_token: $('#access-token').val(), user_id: $('#user-id').val()}),
-      error: function() { alert('error'); },
-      success: function(data) {
-        var models = JSON.parse(data).models;
-        models.forEach(function(model) {
-          $('#conversations').append('<textarea id="conversation-textarea-' + model.id + '"/>');
-          $('#conversations').append('<input id="conversation-input-' + model.id + '"/>')
-          $('#conversations').append('<hr/>');
-        });
-      }
+              $scope.socket.on('errorMessage', function(message) {
+                console.log(JSON.stringify(message));
+              });
+            })
+          })
+          .error(function() {
+            alert('error');
+          });
+      };
+
+      $scope.loadConversations = function() {
+        $http
+          .get('/conversationParticipants', {params: {access_token: $scope.accessToken, user_id: $scope.userId}})
+          .success(function(data) {
+            var conversationParticipants = data.models;
+            $scope.conversations = _.reduce(_.map(conversationParticipants, function(conversationParticipant) {
+              var obj = {};
+              obj[conversationParticipant.conversation.id] = {model: conversationParticipant.conversation, messages: []};
+              return obj;
+            }), function(memo, obj) {
+              return _.extend(memo, obj);
+            }, {});
+          })
+          .error(function() {
+            alert('error');
+          });
+      };
+
+      $scope.sendMessage = function(conversationId, message) {
+        if(message.length > 0) {
+          $scope.socket.emit('message', {conversation: conversationId, text: message});
+        }
+      };
     });
-  });
 
 })(jQuery);
-
-/*
-var accessToken = location.search.match(/\?access_token=(.*)/)[1];
-var socket = io.connect('http://localhost:8080?accessToken=' + accessToken);
-
-socket.on('connect', function() {
-  socket.on('message', function(message) {
-    console.log(JSON.stringify(message));
-  });
-
-  socket.on('errorMessage', function(message) {
-    console.log(JSON.stringify(message));
-  });
-
-  socket.emit('message', {conversation: 1, text: 'heheszky'});
-});
-*/
