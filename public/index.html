@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>pvpc-chat-client</title>
+  </head>
+  <body>
+    EMAIL
+    <input id="email"/>
+    PASSWORD
+    <input id="password"/>
+    <button id="login-button">login</button>
+    USER ID
+    <input id="user-id" readonly/>
+    ACCESS TOKEN
+    <input id="access-token" readonly/>
+    <hr/>
+    CONVERSATIONS
+    <button id="load-conversations-button">LOAD</button>
+    <div id="conversations">
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="./socket.io.js"></script>
+    <script src="./client.js"></script>
+  </body>
+</html>
